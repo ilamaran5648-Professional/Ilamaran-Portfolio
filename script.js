@@ -188,8 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submitBtn');
 
     // Backend API Endpoint
-    // Defaults to local FastAPI backend; can be configured via window.PORTFOLIO_API_URL in production
-    const API_URL = window.PORTFOLIO_API_URL || 'http://127.0.0.1:8000/api/contact';
+    // Defaults to deployed production FastAPI service on Render
+    // For local development, override via: window.PORTFOLIO_API_URL = 'http://127.0.0.1:8000/api/contact';
+    const PRODUCTION_API_URL = 'https://ilamaran-portfolio-api.onrender.com/api/contact';
+    const API_URL = window.PORTFOLIO_API_URL || PRODUCTION_API_URL;
 
     let isSubmitting = false;
 
@@ -356,7 +358,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!navigator.onLine) {
           displayMessage = 'You appear to be offline. Please check your internet connection.';
         } else if (error.name === 'TypeError' || (error.message && error.message.includes('fetch'))) {
-          displayMessage = 'Could not connect to backend server. Please verify FastAPI is running at http://127.0.0.1:8000, or contact me directly at ilamaran5648@gmail.com.';
+          if (API_URL.includes('127.0.0.1') || API_URL.includes('localhost')) {
+            displayMessage = 'Could not connect to backend server. Please verify FastAPI is running at http://127.0.0.1:8000, or contact me directly at ilamaran5648@gmail.com.';
+          } else {
+            displayMessage = 'Could not connect to backend server. Please try again shortly, or contact me directly at ilamaran5648@gmail.com.';
+          }
         }
 
         if (formStatusBanner) {
